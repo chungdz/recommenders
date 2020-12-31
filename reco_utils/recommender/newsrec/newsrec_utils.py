@@ -347,6 +347,7 @@ def get_mind_data_set(type):
             "https://mind201910small.blob.core.windows.net/release/",
             "MINDlarge_train.zip",
             "MINDlarge_dev.zip",
+            "MINDlarge_test.zip",
             "MINDlarge_utils.zip",
         )
 
