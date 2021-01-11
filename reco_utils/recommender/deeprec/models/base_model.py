@@ -583,7 +583,7 @@ class BaseModel:
         preds = []
         labels = []
         imp_indexs = []
-        for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_data_from_file(
+        for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_test_data_from_file(
             filename
         )):
             step_pred, step_labels = self.eval(load_sess, batch_data_input)

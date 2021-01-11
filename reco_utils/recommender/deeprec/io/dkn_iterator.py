@@ -207,6 +207,66 @@ class DKNTextIterator(BaseIterator):
                     impression_id_list,
                 )
                 yield self.gen_feed_dict(res), impression_id_list, data_size
+    
+    def load_test_data_from_file(self, infile):
+        """Read and parse data from a file.
+        
+        Args:
+            infile (str): text input file. Each line in this file is an instance.
+
+        Returns:
+            obj: An iterator that will yields parsed results, in the format of graph feed_dict.
+            List: impression id list
+            Int: size of the data in a batch
+        """
+        candidate_news_index_batch = []
+        click_news_index_batch = []
+        candidate_news_entity_index_batch = []
+        click_news_entity_index_batch = []
+        label_list = []
+        impression_id_list = []
+        cnt = 0
+
+        with tf.io.gfile.GFile(infile, "r") as rd:
+            for line in rd:
+                (
+                    label,
+                    candidate_news_index,
+                    click_news_index,
+                    candidate_news_entity_index,
+                    click_news_entity_index,
+                    impression_id,
+                ) = self.parser_one_line(line)
+
+                candidate_news_index_batch.append(candidate_news_index)
+                click_news_index_batch.append(click_news_index)
+                candidate_news_entity_index_batch.append(candidate_news_entity_index)
+                click_news_entity_index_batch.append(click_news_entity_index)
+                label_list.append(label)
+                impression_id_list.append(impression_id)
+
+                cnt += 1
+                if cnt >= self.batch_size:
+                    res = self._convert_data(
+                        label_list,
+                        candidate_news_index_batch,
+                        click_news_index_batch,
+                        candidate_news_entity_index_batch,
+                        click_news_entity_index_batch,
+                        impression_id_list,
+                    )
+                    data_size = self.batch_size
+                    yield self.gen_feed_dict(res), impression_id_list, data_size
+                    candidate_news_index_batch = []
+                    click_news_index_batch = []
+                    candidate_news_entity_index_batch = []
+                    click_news_entity_index_batch = []
+                    label_list = []
+                    impression_id_list = []
+                    cnt = 0
+            if cnt > 0:
+                data_size = cnt
+            yield self.gen_feed_dict(res), impression_id_list, data_size
 
     def load_infer_data_from_file(self, infile):
         """Read and parse data from a file for infer document embedding.
