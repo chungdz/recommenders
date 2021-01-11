@@ -391,7 +391,7 @@ class DKNTextIterator(BaseIterator):
         )
         return res
 
-    def gen_feed_dict(self, data_dict):
+    def gen_feed_dict(self, data_dict, cbatch_size=None):
         """Construct a dictionary that maps graph elements to values.
         
         Args:
@@ -401,13 +401,16 @@ class DKNTextIterator(BaseIterator):
             dict: a dictionary that maps graph elements to numpy arrays.
 
         """
+        batch_size = self.batch_size
+        if cbatch_size is not None:
+            batch_size = cbatch_size
         feed_dict = {
             self.labels: data_dict["labels"].reshape([-1, 1]),
             self.candidate_news_index_batch: data_dict[
                 "candidate_news_index_batch"
-            ].reshape([self.batch_size, self.doc_size]),
+            ].reshape([batch_size, self.doc_size]),
             self.click_news_index_batch: data_dict["click_news_index_batch"].reshape(
-                [self.batch_size, self.history_size, self.doc_size]
+                [batch_size, self.history_size, self.doc_size]
             ),
             self.candidate_news_entity_index_batch: data_dict[
                 "candidate_news_entity_index_batch"
