@@ -570,7 +570,7 @@ class BaseModel:
             res.update(res_pairwise)
         return res
     
-    def run_test(self, filename, save_model=True, validate=False):
+    def run_test(self, filename, lenth, save_model=True, validate=False):
         """Evaluate the given file and returns some evaluation metrics.
 
         Args:
@@ -583,16 +583,21 @@ class BaseModel:
         preds = []
         labels = []
         imp_indexs = []
-        for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_test_data_from_file(
+        for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_data_from_file(
             filename
         )):
             step_pred, step_labels = self.eval(load_sess, batch_data_input)
             preds.extend(np.reshape(step_pred, -1))
             labels.extend(np.reshape(step_labels, -1))
             imp_indexs.extend(np.reshape(imp_index, -1))
-            
         print(len(preds))
-        print(imp_indexs)
+        if lenth < 2000:
+            print(imp_indexs)
+        preds = preds[:lenth]
+        labels = labels[:lenth]
+        imp_indexs = imp_indexs[:lenth]
+        if lenth < 2000:
+            print(labels)
         all_keys = list(set(imp_indexs))
         group_labels = {k: [] for k in all_keys}
         group_preds = {k: [] for k in all_keys}
