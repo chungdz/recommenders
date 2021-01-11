@@ -54,12 +54,15 @@ test_path = os.path.join(data_path, "test")
 if not os.path.exists(train_path):
     train_zip, valid_zip, test_zip = download_mind(size='large', dest_path=data_path)
     train_path, valid_path, test_path = extract_mind(train_zip, valid_zip, test_zip, root_folder=data_path)
+# parse file
 if not os.path.exists(train_file):
     train_session, train_history = read_clickhistory(train_path, "behaviors.tsv")
     get_train_input(train_session, train_file)
-if not os.path.exists(valid_file):
+
     valid_session, valid_history = read_clickhistory(valid_path, "behaviors.tsv")
     get_valid_input(valid_session, valid_file)
-if not os.path.exists(test_file):
+
     test_session, test_history = read_test_clickhistory(test_path, "behaviors.tsv")
     get_test_input(test_session, test_file)
+
+    get_user_history(train_history, valid_history, user_history_file, test_history=test_history)

@@ -217,7 +217,7 @@ def get_test_input(session, test_file_path):
         userid, _, imps = session[sess_id]
         for i in range(len(imps)):
             fp_test.write(
-                str(clabel) + " " + "valid_" + userid + " " + imps[i] + "%" + str(sess_id) + "\n"
+                str(clabel) + " " + "test_" + userid + " " + imps[i] + "%" + str(sess_id) + "\n"
             )
             clabel = clabel ^ 1
     fp_test.close()
@@ -227,7 +227,7 @@ def get_test_input(session, test_file_path):
         raise FileNotFoundError(f"Error when generating {test_file_path}")
 
 
-def get_user_history(train_history, valid_history, user_history_path):
+def get_user_history(train_history, valid_history, user_history_path, test_history=None):
     """Generate user history file.
 
     Args:
@@ -244,6 +244,11 @@ def get_user_history(train_history, valid_history, user_history_path):
         fp_user_history.write(
             "valid_" + userid + " " + ",".join(valid_history[userid]) + "\n"
         )
+    if test_history is not None:
+        for userid in test_history:
+            fp_user_history.write(
+                "test_" + userid + " " + ",".join(test_history[userid]) + "\n"
+            )
     fp_user_history.close()
     if os.path.isfile(user_history_path):
         logger.info(f"User history file {user_history_path} successfully generated")
