@@ -599,13 +599,13 @@ class BaseModel:
         if lenth < 2000:
             print(labels)
         print(len(preds))
-        all_keys = sorted(list(set(imp_indexs)))
+        all_keys = sorted([int(ip) for ip in set(imp_indexs)])
         group_labels = {k: [] for k in all_keys}
         group_preds = {k: [] for k in all_keys}
 
         for l, p, k in zip(labels, preds, imp_indexs):
-            group_labels[k].append(l)
-            group_preds[k].append(p)
+            group_labels[int(k)].append(l)
+            group_preds[int(k)].append(p)
         
         if validate:
             all_labels = []
