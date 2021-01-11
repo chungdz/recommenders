@@ -70,7 +70,7 @@ if not os.path.exists(train_file):
 
     get_user_history(train_history, valid_history, user_history_file, test_history=test_history)
 # generate embeddings
-if not os.path.exists():
+if not os.path.exists(news_feature_file):
     train_news = os.path.join(train_path, "news.tsv")
     valid_news = os.path.join(valid_path, "news.tsv")
     test_news = os.path.join(test_path, "news.tsv")
