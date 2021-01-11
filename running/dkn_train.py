@@ -35,7 +35,7 @@ formatter = logging.Formatter("%(asctime)s %(levelname)s: %(message)s", datefmt=
 handler.setFormatter(formatter)
 logger.handlers = [handler]
 
-epochs = 10
+epochs = 5
 history_size = 50
 batch_size = 100
 
@@ -46,6 +46,9 @@ valid_file = os.path.join(data_path, "valid_mind.txt")
 test_file = os.path.join(data_path, "test_mind.txt")
 user_history_file = os.path.join(data_path, "user_history.txt")
 infer_embedding_file = os.path.join(data_path, "infer_embedding.txt")
+news_feature_file = os.path.join(data_path, "doc_feature.txt")
+word_embeddings_file = os.path.join(data_path, "word_embeddings_5w_100.npy")
+entity_embeddings_file = os.path.join(data_path, "entity_embeddings_5w_100.npy")
 
 train_path = os.path.join(data_path, "train")
 valid_path = os.path.join(data_path, "valid")
@@ -66,22 +69,41 @@ if not os.path.exists(train_file):
     get_test_input(test_session, test_file)
 
     get_user_history(train_history, valid_history, user_history_file, test_history=test_history)
+# generate embeddings
+if not os.path.exists():
+    train_news = os.path.join(train_path, "news.tsv")
+    valid_news = os.path.join(valid_path, "news.tsv")
+    test_news = os.path.join(test_path, "news.tsv")
+    news_words, news_entities = get_words_and_entities(train_news, valid_news, test_news)
 
-train_news = os.path.join(train_path, "news.tsv")
-valid_news = os.path.join(valid_path, "news.tsv")
-test_news = os.path.join(test_path, "news.tsv")
-news_words, news_entities = get_words_and_entities(train_news, valid_news, test_news)
+    train_entities = os.path.join(train_path, "entity_embedding.vec")
+    valid_entities = os.path.join(valid_path, "entity_embedding.vec")
+    test_entities = os.path.join(test_path, "entity_embedding.vec")
+    news_feature_file, word_embeddings_file, entity_embeddings_file = generate_embeddings(
+        data_path,
+        news_words,
+        news_entities,
+        train_entities,
+        valid_entities,
+        test_entities=test_entities,
+        max_sentence=10,
+        word_embedding_dim=100,
+    )
 
-train_entities = os.path.join(train_path, "entity_embedding.vec")
-valid_entities = os.path.join(valid_path, "entity_embedding.vec")
-test_entities = os.path.join(test_path, "entity_embedding.vec")
-news_feature_file, word_embeddings_file, entity_embeddings_file = generate_embeddings(
-    data_path,
-    news_words,
-    news_entities,
-    train_entities,
-    valid_entities,
-    test_entities=test_entities,
-    max_sentence=10,
-    word_embedding_dim=100,
-)
+yaml_file = maybe_download(url="https://recodatasets.blob.core.windows.net/deeprec/deeprec/dkn/dkn_MINDsmall.yaml", 
+                           work_directory=data_path)
+hparams = prepare_hparams(yaml_file,
+                          news_feature_file=news_feature_file,
+                          user_history_file=user_history_file,
+                          wordEmb_file=word_embeddings_file,
+                          entityEmb_file=entity_embeddings_file,
+                          epochs=epochs,
+                          history_size=history_size,
+                          batch_size=batch_size)
+
+hparams.save_model = True
+hparams.show_step = 1000
+hparams.MODEL_DIR = 'para'
+
+model = DKN(hparams, DKNTextIterator)
+model.fit(train_file, valid_file)
