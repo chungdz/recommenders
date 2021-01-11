@@ -6,9 +6,12 @@ import abc
 import time
 import os
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from tensorflow import keras
 from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
+from tqdm import tqdm
+import scipy.stats as ss
 
 
 __all__ = ["BaseModel"]
@@ -451,7 +454,7 @@ class BaseModel:
 
             train_end = time.time()
             train_time = train_end - train_start
-
+            self.model.save_weights('../parameter/dkn_' + str(epoch) + '.h5')
             if self.hparams.save_model:
                 if not os.path.exists(self.hparams.MODEL_DIR):
                     os.makedirs(self.hparams.MODEL_DIR)
@@ -566,6 +569,70 @@ class BaseModel:
             )
             res.update(res_pairwise)
         return res
+    
+    def run_test(self, filename, save_model=True, validate=False):
+        """Evaluate the given file and returns some evaluation metrics.
+
+        Args:
+            filename (str): A file name that will be evaluated.
+
+        Returns:
+            dict: A dictionary contains evaluation metrics.
+        """
+        load_sess = self.sess
+        preds = []
+        labels = []
+        imp_indexs = []
+        for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_data_from_file(
+            filename
+        )):
+            step_pred, step_labels = self.eval(load_sess, batch_data_input)
+            preds.extend(np.reshape(step_pred, -1))
+            labels.extend(np.reshape(step_labels, -1))
+            imp_indexs.extend(np.reshape(imp_index, -1))
+            
+        print(len(preds))
+        all_keys = list(set(imp_indexs))
+        group_labels = {k: [] for k in all_keys}
+        group_preds = {k: [] for k in all_keys}
+
+        for l, p, k in zip(labels, preds, imp_indexs):
+            group_labels[k].append(l)
+            group_preds[k].append(p)
+        
+        if validate:
+            all_labels = []
+            all_preds = []
+            for k in all_keys:
+                all_labels.append(group_labels[k])
+                all_preds.append(group_preds[k])
+            
+            metric_list = [x.strip() for x in "group_auc || mean_mrr || ndcg@5;10".split("||")]
+            ret = cal_metric(all_labels, all_preds, metric_list)
+            for metric, val in ret.items():
+                print("Epoch: {}, {}: {}".format(1, metric, val))
+
+        if save_model:
+            final_arr = []
+            for k in group_preds.keys():
+                new_row = []
+                new_row.append(k)
+                new_row.append(','.join(list(map(str, np.array(group_labels[k]).astype(int)))))
+                new_row.append(','.join(list(map(str, np.array(group_preds[k]).astype(float)))))
+                
+                rank = ss.rankdata(-np.array(group_preds[k])).astype(int).tolist()
+                new_row.append('[' + ','.join(list(map(str, rank))) + ']')
+                
+                assert(len(rank) == len(group_labels[k]))
+                
+                final_arr.append(new_row)
+            
+            output_path = './result/'
+            fdf = pd.DataFrame(final_arr, columns=['impression', 'labels', 'preds', 'ranks'])
+            fdf.drop(columns=['labels', 'ranks']).to_csv(output_path + 'score.txt', sep=' ', index=False)
+            fdf.drop(columns=['labels', 'preds']).to_csv(output_path + 'result.txt', header=None, sep=' ', index=False)
+        
+        return
 
     def predict(self, infile_name, outfile_name):
         """Make predictions on the given data, and output predicted scores to a file.
