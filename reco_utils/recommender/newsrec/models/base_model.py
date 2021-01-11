@@ -228,16 +228,16 @@ class BaseModel:
 
             train_end = time.time()
             train_time = train_end - train_start
-
-            eval_start = time.time()
-
-            train_info = ",".join(
-                [
-                    str(item[0]) + ":" + str(item[1])
-                    for item in [("logloss loss", epoch_loss / step)]
-                ]
-            )
             print("at epoch {0:d} , train time: {1:.1f}".format(epoch, train_time))
+            # eval_start = time.time()
+
+            # train_info = ",".join(
+            #     [
+            #         str(item[0]) + ":" + str(item[1])
+            #         for item in [("logloss loss", epoch_loss / step)]
+            #     ]
+            # )
+            
             # eval_res = self.run_eval(valid_news_file, valid_behaviors_file)
             # eval_info = ", ".join(
             #     [
