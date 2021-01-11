@@ -20,6 +20,7 @@ from reco_utils.recommender.deeprec.deeprec_utils import prepare_hparams
 from reco_utils.recommender.deeprec.models.dkn import DKN
 from reco_utils.recommender.deeprec.io.dkn_iterator import DKNTextIterator
 
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 print(f"System version: {sys.version}")
 print(f"Tensorflow version: {tf.__version__}")
 

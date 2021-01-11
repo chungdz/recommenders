@@ -72,7 +72,7 @@ def download_mind(size="small", dest_path=None):
         return train_path, valid_path
 
 
-def extract_mind(train_zip, valid_zip, train_folder="train", valid_folder="valid"):
+def extract_mind(train_zip, valid_zip, test_zip=None, train_folder="train", valid_folder="valid", test_folder='test'):
     """Extract MIND dataset
 
     Args:
@@ -89,6 +89,10 @@ def extract_mind(train_zip, valid_zip, train_folder="train", valid_folder="valid
     valid_path = os.path.join(root_folder, valid_folder)
     unzip_file(train_zip, train_path)
     unzip_file(valid_zip, valid_path)
+    if test_zip is not None:
+        test_path = os.path.join(root_folder, test_folder)
+        unzip_file(test_zip, test_path)
+        return train_path, valid_path, test_path
     return train_path, valid_path
 
 
