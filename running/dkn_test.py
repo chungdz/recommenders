@@ -66,7 +66,7 @@ hparams = prepare_hparams(yaml_file,
                           batch_size=batch_size)
 
 hparams.save_model = True
-hparams.show_step = 1000
+hparams.show_step = 5000
 hparams.MODEL_DIR = 'para'
 
 model = DKN(hparams, DKNTextIterator)

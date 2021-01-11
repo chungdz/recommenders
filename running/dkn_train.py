@@ -102,8 +102,9 @@ hparams = prepare_hparams(yaml_file,
                           batch_size=batch_size)
 
 hparams.save_model = True
-hparams.show_step = 1000
+hparams.show_step = 20000
 hparams.MODEL_DIR = 'para'
+hparams.save_epoch = 1
 
 model = DKN(hparams, DKNTextIterator)
-model.fit(train_file, valid_file)
+model.fit(train_file, valid_file, 16918280)

@@ -12,7 +12,7 @@ from tensorflow import keras
 from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
 from tqdm import tqdm
 import scipy.stats as ss
-
+import math
 
 __all__ = ["BaseModel"]
 
@@ -410,7 +410,7 @@ class BaseModel:
         except:
             raise IOError("Failed to find any matching files for {0}".format(act_path))
 
-    def fit(self, train_file, valid_file, test_file=None):
+    def fit(self, train_file, valid_file, lenth, test_file=None):
         """Fit the model with train_file. Evaluate the model on valid_file per epoch to observe the training status.
         If test_file is not None, evaluate it too.
 
@@ -438,7 +438,7 @@ class BaseModel:
                 batch_data_input,
                 impression,
                 data_size,
-            ) in self.iterator.load_data_from_file(train_file):
+            ) in tqdm(self.iterator.load_data_from_file(train_file), total=math.ceil(lenth / self.hparams.batch_size)):
                 step_result = self.train(train_sess, batch_data_input)
                 (_, _, step_loss, step_data_loss, summary) = step_result
                 if self.hparams.write_tfevents:
@@ -454,7 +454,7 @@ class BaseModel:
 
             train_end = time.time()
             train_time = train_end - train_start
-            
+            print('train finished')
             if self.hparams.save_model:
                 if not os.path.exists(self.hparams.MODEL_DIR):
                     os.makedirs(self.hparams.MODEL_DIR)
@@ -585,7 +585,7 @@ class BaseModel:
         imp_indexs = []
         for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_data_from_file(
             filename
-        )):
+        ), total=math.ceil(lenth / self.hparams.batch_size)):
             step_pred, step_labels = self.eval(load_sess, batch_data_input)
             preds.extend(np.reshape(step_pred, -1))
             labels.extend(np.reshape(step_labels, -1))
