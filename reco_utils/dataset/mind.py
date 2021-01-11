@@ -125,6 +125,28 @@ def read_clickhistory(path, filename):
         sessions.append([userid, clicks, pos, neg])
     return sessions, userid_history
 
+def read_test_clickhistory(path, filename):
+    """Read click history file
+
+    Args:
+        path (str): Folder path
+        filename (str): Filename
+
+    Returns:
+        list, dict: List of user session with user_id, clicks, all interactions. Dictionary
+            with user_id click history
+    """
+    userid_history = {}
+    with open(os.path.join(path, filename)) as f:
+        lines = f.readlines()
+    sessions = []
+    for i in range(len(lines)):
+        _, userid, imp_time, click, imps = lines[i].strip().split("\t")
+        clicks = click.split(" ")
+        imps = imps.split(" ")
+        userid_history[userid] = clicks
+        sessions.append([userid, clicks, imps])
+    return sessions, userid_history
 
 def _newsample(nnn, ratio):
     if ratio > len(nnn):
@@ -181,6 +203,28 @@ def get_valid_input(session, valid_file_path):
         logger.info(f"Validation file {valid_file_path} successfully generated")
     else:
         raise FileNotFoundError(f"Error when generating {valid_file_path}")
+
+def get_test_input(session, test_file_path):
+    """Generate test file.
+
+    Args:
+        session (list): List of user session with user_id, clicks, all interactions.
+        test_file_path (str): Path to file.
+    """
+    fp_test = open(test_file_path, "w", encoding="utf-8")
+    clabel = 0
+    for sess_id in range(len(session)):
+        userid, _, imps = session[sess_id]
+        for i in range(len(imps)):
+            fp_test.write(
+                str(clabel) + " " + "valid_" + userid + " " + imps[i] + "%" + str(sess_id) + "\n"
+            )
+            clabel = clabel ^ 1
+    fp_test.close()
+    if os.path.isfile(test_file_path):
+        logger.info(f"Test file {test_file_path} successfully generated")
+    else:
+        raise FileNotFoundError(f"Error when generating {test_file_path}")
 
 
 def get_user_history(train_history, valid_history, user_history_path):
