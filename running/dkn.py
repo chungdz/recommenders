@@ -36,3 +36,6 @@ valid_file = os.path.join(data_path, "valid_mind.txt")
 test_file = os.path.join(data_path, "test_mind.txt")
 user_history_file = os.path.join(data_path, "user_history.txt")
 infer_embedding_file = os.path.join(data_path, "infer_embedding.txt")
+
+train_zip, valid_zip, test_zip = download_mind(size='large', dest_path=data_path)
+train_path, valid_path, test_path = extract_mind(train_zip, valid_zip, test_zip)
