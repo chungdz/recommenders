@@ -592,6 +592,7 @@ class BaseModel:
             imp_indexs.extend(np.reshape(imp_index, -1))
             
         print(len(preds))
+        print(imp_indexs)
         all_keys = list(set(imp_indexs))
         group_labels = {k: [] for k in all_keys}
         group_preds = {k: [] for k in all_keys}

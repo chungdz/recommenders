@@ -266,7 +266,15 @@ class DKNTextIterator(BaseIterator):
                     cnt = 0
             if cnt > 0:
                 data_size = cnt
-            yield self.gen_feed_dict(res), impression_id_list, data_size
+                res = self._convert_data(
+                        label_list,
+                        candidate_news_index_batch,
+                        click_news_index_batch,
+                        candidate_news_entity_index_batch,
+                        click_news_entity_index_batch,
+                        impression_id_list,
+                    )
+                yield self.gen_feed_dict(res), impression_id_list, data_size
 
     def load_infer_data_from_file(self, infile):
         """Read and parse data from a file for infer document embedding.
