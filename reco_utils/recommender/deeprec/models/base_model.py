@@ -621,7 +621,7 @@ class BaseModel:
 
         if save_model:
             final_arr = []
-            for k in group_preds.keys():
+            for k in all_keys:
                 new_row = []
                 new_row.append(k)
                 new_row.append(','.join(list(map(str, np.array(group_labels[k]).astype(int)))))
