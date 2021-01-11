@@ -66,3 +66,22 @@ if not os.path.exists(train_file):
     get_test_input(test_session, test_file)
 
     get_user_history(train_history, valid_history, user_history_file, test_history=test_history)
+
+train_news = os.path.join(train_path, "news.tsv")
+valid_news = os.path.join(valid_path, "news.tsv")
+test_news = os.path.join(test_path, "news.tsv")
+news_words, news_entities = get_words_and_entities(train_news, valid_news, test_news)
+
+train_entities = os.path.join(train_path, "entity_embedding.vec")
+valid_entities = os.path.join(valid_path, "entity_embedding.vec")
+test_entities = os.path.join(test_path, "entity_embedding.vec")
+news_feature_file, word_embeddings_file, entity_embeddings_file = generate_embeddings(
+    data_path,
+    news_words,
+    news_entities,
+    train_entities,
+    valid_entities,
+    test_entities=test_entities,
+    max_sentence=10,
+    word_embedding_dim=100,
+)

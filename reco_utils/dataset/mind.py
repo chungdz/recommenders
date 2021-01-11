@@ -270,7 +270,7 @@ def _read_news(filepath, news_words, news_entities, tokenizer):
     return news_words, news_entities
 
 
-def get_words_and_entities(train_news, valid_news):
+def get_words_and_entities(train_news, valid_news, test_news=None):
     """Load words and entities
 
     Args:
@@ -289,6 +289,10 @@ def get_words_and_entities(train_news, valid_news):
     news_words, news_entities = _read_news(
         valid_news, news_words, news_entities, tokenizer
     )
+    if test_news is not None:
+        news_words, news_entities = _read_news(
+        test_news, news_words, news_entities, tokenizer
+    )
     return news_words, news_entities
 
 
@@ -306,6 +310,7 @@ def generate_embeddings(
     news_entities,
     train_entities,
     valid_entities,
+    test_entities=None,
     max_sentence=10,
     word_embedding_dim=100,
 ):
@@ -362,6 +367,15 @@ def generate_embeddings(
             list(map(float, linesplit[1:]))
         )
     fp_entity_vec_valid.close()
+
+    logger.info("Reading test entities...")
+    fp_entity_vec_test = open(test_entities, "r", encoding="utf-8")
+    for line in fp_entity_vec_test:
+        linesplit = line.split()
+        entity_embedding_dict[linesplit[0]] = np.asarray(
+            list(map(float, linesplit[1:]))
+        )
+    fp_entity_vec_test.close()
 
     logger.info("Generating word and entity indexes...")
     word_dict = {}
