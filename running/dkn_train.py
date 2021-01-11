@@ -105,6 +105,7 @@ hparams.save_model = True
 hparams.show_step = 20000
 hparams.MODEL_DIR = 'para'
 hparams.save_epoch = 1
+hparams.write_tfevents = False
 
 model = DKN(hparams, DKNTextIterator)
 model.fit(train_file, valid_file, 16918280)
