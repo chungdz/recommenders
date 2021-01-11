@@ -454,7 +454,7 @@ class BaseModel:
 
             train_end = time.time()
             train_time = train_end - train_start
-            self.model.save_weights('../parameter/dkn_' + str(epoch) + '.h5')
+            
             if self.hparams.save_model:
                 if not os.path.exists(self.hparams.MODEL_DIR):
                     os.makedirs(self.hparams.MODEL_DIR)

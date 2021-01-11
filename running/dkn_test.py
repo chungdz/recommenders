@@ -70,5 +70,9 @@ hparams.show_step = 1000
 hparams.MODEL_DIR = 'para'
 
 model = DKN(hparams, DKNTextIterator)
-# model.model.load_weights('./para/dkn_0.h5')
+# model.load_model('./para/')
 
+model.run_test(valid_file, save_model=True, validate=True)
+# model.run_test(test_file, save_model=True, validate=False)
+
+    
