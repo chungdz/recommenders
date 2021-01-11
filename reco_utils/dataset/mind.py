@@ -17,6 +17,9 @@ URL_MIND_LARGE_TRAIN = (
 URL_MIND_LARGE_VALID = (
     "https://mind201910small.blob.core.windows.net/release/MINDlarge_dev.zip"
 )
+URL_MIND_LARGE_TEST = (
+    "https://mind201910small.blob.core.windows.net/release/MINDlarge_test.zip"
+)
 URL_MIND_SMALL_TRAIN = (
     "https://mind201910small.blob.core.windows.net/release/MINDsmall_train.zip"
 )
@@ -34,7 +37,7 @@ URL_MIND_DEMO_UTILS = (
 )
 
 URL_MIND = {
-    "large": (URL_MIND_LARGE_TRAIN, URL_MIND_LARGE_VALID),
+    "large": (URL_MIND_LARGE_TRAIN, URL_MIND_LARGE_VALID, URL_MIND_LARGE_TEST),
     "small": (URL_MIND_SMALL_TRAIN, URL_MIND_SMALL_VALID),
     "demo": (URL_MIND_DEMO_TRAIN, URL_MIND_DEMO_VALID)
 }
@@ -51,14 +54,22 @@ def download_mind(size="small", dest_path=None):
     Returns:
         str, str: Path to train and validation sets.
     """
-    size_options = ["small", "large","demo"]
+    size_options = ["small", "large", "demo"]
     if size not in size_options:
         raise ValueError(f"Wrong size option, available options are {size_options}")
-    url_train, url_valid = URL_MIND[size]
-    with download_path(dest_path) as path:
-        train_path = maybe_download(url=url_train, work_directory=path)
-        valid_path = maybe_download(url=url_valid, work_directory=path)
-    return train_path, valid_path
+    if size == 'large':
+        url_train, url_valid, url_test = URL_MIND[size]
+        with download_path(dest_path) as path:
+            train_path = maybe_download(url=url_train, work_directory=path)
+            valid_path = maybe_download(url=url_valid, work_directory=path)
+            test_path = maybe_download(url=url_test, work_directory=path)
+        return train_path, valid_path, test_path
+    else:
+        url_train, url_valid = URL_MIND[size]
+        with download_path(dest_path) as path:
+            train_path = maybe_download(url=url_train, work_directory=path)
+            valid_path = maybe_download(url=url_valid, work_directory=path)
+        return train_path, valid_path
 
 
 def extract_mind(train_zip, valid_zip, train_folder="train", valid_folder="valid"):
