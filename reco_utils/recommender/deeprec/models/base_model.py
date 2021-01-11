@@ -598,7 +598,8 @@ class BaseModel:
         imp_indexs = imp_indexs[:lenth]
         if lenth < 2000:
             print(labels)
-        all_keys = list(set(imp_indexs))
+        print(len(preds))
+        all_keys = sorted(list(set(imp_indexs)))
         group_labels = {k: [] for k in all_keys}
         group_preds = {k: [] for k in all_keys}
 

@@ -72,7 +72,7 @@ hparams.MODEL_DIR = 'para'
 model = DKN(hparams, DKNTextIterator)
 # model.load_model('./para/')
 
-model.run_test(valid_file, save_model=True, validate=True)
-# model.run_test(test_file, save_model=True, validate=False)
+model.run_test(valid_file, 14085557, save_model=True, validate=True)
+# model.run_test(test_file, 93115001, save_model=True, validate=False)
 
     
