@@ -139,13 +139,13 @@ def read_test_clickhistory(path, filename):
     userid_history = {}
     with open(os.path.join(path, filename)) as f:
         lines = f.readlines()
-    sessions = []
+    sessions = {}
     for i in range(len(lines)):
-        _, userid, imp_time, click, imps = lines[i].strip().split("\t")
+        session_id, userid, imp_time, click, imps = lines[i].strip().split("\t")
         clicks = click.split(" ")
         imps = imps.split(" ")
         userid_history[userid] = clicks
-        sessions.append([userid, clicks, imps])
+        sessions[int(session_id)] = [userid, clicks, imps]
     return sessions, userid_history
 
 def _newsample(nnn, ratio):
@@ -213,7 +213,7 @@ def get_test_input(session, test_file_path):
     """
     fp_test = open(test_file_path, "w", encoding="utf-8")
     clabel = 0
-    for sess_id in range(len(session)):
+    for sess_id in session:
         userid, _, imps = session[sess_id]
         for i in range(len(imps)):
             fp_test.write(
