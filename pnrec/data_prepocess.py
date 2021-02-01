@@ -6,6 +6,8 @@ import zipfile
 from tqdm import tqdm
 from tempfile import TemporaryDirectory
 import tensorflow as tf
+import pandas as pd
+import json
 
 from reco_utils.recommender.deeprec.deeprec_utils import download_deeprec_resources 
 from reco_utils.recommender.newsrec.newsrec_utils import prepare_hparams
@@ -54,42 +56,30 @@ if not os.path.exists(yaml_file):
     download_deeprec_resources(r'https://recodatasets.blob.core.windows.net/newsrec/', \
                                os.path.join(data_path, 'utils'), mind_utils)
 
-hparams = prepare_hparams(yaml_file, 
-                          wordEmb_file=wordEmb_file,
-                          wordDict_file=wordDict_file, 
-                          userDict_file=userDict_file,
-                          batch_size=batch_size,
-                          epochs=epochs,
-                          show_step=10)
-print(hparams)
 
-iterator = MINDIterator
-model = NRMSModel(hparams, iterator, seed=seed)
+train = pd.read_csv('./data/train/behaviors.tsv', sep="\t", encoding="utf-8", names=["id", "uid", "time", "hist", "imp"])
+train['date'] = train['time'].apply(lambda x: x.split()[0])
+his_day = train[train['date'] != '11/14/2019']
+target_day = train[train['date'] == '11/14/2019']
 
-# print(model.run_eval(valid_news_file, valid_behaviors_file))
+his_day.drop(columns=['date']).to_csv('./data/train/his_behaviors.tsv', sep="\t", encoding="utf-8", header=None, index=None)
+print('his ', his_day.shape)
+target_day.drop(columns=['date']).to_csv('./data/train/target_behaviors.tsv', sep="\t", encoding="utf-8", header=None, index=None)
+print('target ', target_day.shape)
 
-model.fit(train_news_file, train_behaviors_file, valid_news_file, valid_behaviors_file)
-# res_syn = model.run_eval(valid_news_file, valid_behaviors_file)
-# print(res_syn)
+f_train_news = os.path.join(data_path, "train/news.tsv")
+f_dev_news = os.path.join(data_path, "dev/news.tsv")
 
-# pm.record("res_syn", res_syn)
+print("Loading training news")
+train_news = pd.read_csv(f_train_news, sep="\t", encoding="utf-8",
+                        names=["newsid", "cate", "subcate", "title", "abs", "url", "title_ents", "abs_ents"],
+                        quoting=3)
 
-model_path = os.path.join(model_path, "model")
-os.makedirs(model_path, exist_ok=True)
+print("Loading dev news")
+dev_news = pd.read_csv(f_dev_news, sep="\t", encoding="utf-8",
+                        names=["newsid", "cate", "subcate", "title", "abs", "url", "title_ents", "abs_ents"],
+                        quoting=3)
 
-model.model.save_weights(os.path.join(model_path, "nrms_ckpt"))
-
-group_impr_indexes, group_labels, group_preds = model.run_slow_eval(test_news_file, test_behaviors_file)
-
-# res = cal_metric(group_labels, group_preds, hparams.metrics)
-
-with open(os.path.join(data_path, 'nrms_prediction.txt'), 'w') as f:
-    for impr_index, preds in tqdm(zip(group_impr_indexes, group_preds)):
-        impr_index += 1
-        pred_rank = (np.argsort(np.argsort(preds)[::-1]) + 1).tolist()
-        pred_rank = '[' + ','.join([str(i) for i in pred_rank]) + ']'
-        f.write(' '.join([str(impr_index), pred_rank])+ '\n')
-
-f = zipfile.ZipFile(os.path.join(data_path, 'nrms_prediction.zip'), 'w', zipfile.ZIP_DEFLATED)
-f.write(os.path.join(data_path, 'nrms_prediction.txt'), arcname='nrms_prediction.txt')
-f.close()
+all_news = pd.concat([train_news, dev_news], ignore_index=True)
+all_news = all_news.drop_duplicates("newsid")
+all_news.to_csv('./data/all_news.tsv', sep="\t", encoding="utf-8", header=None, index=None)
