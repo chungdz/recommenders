@@ -240,7 +240,9 @@ class BaseModel:
                 ]
             )
             
-            eval_res = self.run_slow_eval(valid_news_file, valid_behaviors_file)
+            _, group_labels, group_preds = self.run_slow_eval(valid_news_file, valid_behaviors_file)
+            eval_res = cal_metric(group_labels, group_preds, self.hparams.metrics)
+
             eval_info = ", ".join(
                 [
                     str(item[0]) + ":" + str(item[1])

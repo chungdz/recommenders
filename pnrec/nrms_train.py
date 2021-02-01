@@ -53,7 +53,7 @@ print(hparams)
 iterator = MINDIterator
 model = NRMSModel(hparams, iterator, seed=seed)
 
-print(model.run_slow_eval(news_file, valid_behaviors_file))
+# print(model.run_slow_eval(news_file, valid_behaviors_file))
 
 model.fit(news_file, train_behaviors_file, news_file, valid_behaviors_file)
 
