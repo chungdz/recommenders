@@ -21,7 +21,7 @@ model_path = 'para'
 data_path = 'data'
 epochs = 15
 seed = 42
-batch_size = 32
+batch_size = 128
 
 # Options: demo, small, large, large have test
 MIND_type = 'large'

@@ -240,7 +240,7 @@ class BaseModel:
                 ]
             )
             
-            eval_res = self.run_eval(valid_news_file, valid_behaviors_file)
+            eval_res = self.run_slow_eval(valid_news_file, valid_behaviors_file)
             eval_info = ", ".join(
                 [
                     str(item[0]) + ":" + str(item[1])
