@@ -14,36 +14,13 @@ from reco_utils.dataset.mind import (download_mind,
                                      read_test_clickhistory,
                                      get_train_input, 
                                      get_valid_input,
+                                     get_test_input,
                                      get_user_history,
                                      get_words_and_entities,
                                      generate_embeddings) 
 from reco_utils.recommender.deeprec.deeprec_utils import prepare_hparams
 from reco_utils.recommender.deeprec.models.dkn import DKN
 from reco_utils.recommender.deeprec.io.dkn_iterator import DKNTextIterator
-
-def get_test_input(session, test_file_path):
-    """Generate validation file.
-
-    Args:
-        session (list): List of user session with user_id, clicks, positive and negative interactions.
-        valid_file_path (str): Path to file.
-    """
-    fp_valid = open(test_file_path, "w", encoding="utf-8")
-    for sess_id in range(len(session)):
-        userid, _, poss, negs = session[sess_id]
-        for i in range(len(poss)):
-            fp_valid.write(
-                "1 " + "test_" + userid + " " + poss[i] + "%" + str(sess_id) + "\n"
-            )
-        for i in range(len(negs)):
-            fp_valid.write(
-                "0 " + "test_" + userid + " " + negs[i] + "%" + str(sess_id) + "\n"
-            )
-    fp_valid.close()
-    if os.path.isfile(test_file_path):
-        logger.info(f"Test file {test_file_path} successfully generated")
-    else:
-        raise FileNotFoundError(f"Error when generating {test_file_path}")
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 print(f"System version: {sys.version}")
@@ -76,42 +53,6 @@ entity_embeddings_file = os.path.join(data_path, "entity_embeddings_5w_100.npy")
 train_path = os.path.join(data_path, "train")
 valid_path = os.path.join(data_path, "valid")
 test_path = os.path.join(data_path, "test")
-# not have file then download
-if not os.path.exists(train_path):
-    train_zip, valid_zip, test_zip = download_mind(size='large', dest_path=data_path)
-    train_path, valid_path, test_path = extract_mind(train_zip, valid_zip, test_zip, root_folder=data_path)
-# parse file
-if not os.path.exists(train_file):
-    train_session, train_history = read_clickhistory(train_path, "behaviors.tsv")
-    get_train_input(train_session, train_file)
-
-    valid_session, valid_history = read_clickhistory(valid_path, "behaviors.tsv")
-    get_valid_input(valid_session, valid_file)
-
-    test_session, test_history = read_clickhistory(test_path, "behaviors.tsv")
-    get_test_input(test_session, test_file)
-
-    get_user_history(train_history, valid_history, user_history_file, test_history=test_history)
-# generate embeddings
-if not os.path.exists(news_feature_file):
-    train_news = os.path.join(train_path, "news.tsv")
-    valid_news = os.path.join(valid_path, "news.tsv")
-    test_news = os.path.join(test_path, "news.tsv")
-    news_words, news_entities = get_words_and_entities(train_news, valid_news, test_news)
-
-    train_entities = os.path.join(train_path, "entity_embedding.vec")
-    valid_entities = os.path.join(valid_path, "entity_embedding.vec")
-    test_entities = os.path.join(test_path, "entity_embedding.vec")
-    news_feature_file, word_embeddings_file, entity_embeddings_file = generate_embeddings(
-        data_path,
-        news_words,
-        news_entities,
-        train_entities,
-        valid_entities,
-        test_entities=test_entities,
-        max_sentence=10,
-        word_embedding_dim=100,
-    )
 
 yaml_file = maybe_download(url="https://recodatasets.blob.core.windows.net/deeprec/deeprec/dkn/dkn_MINDsmall.yaml", 
                            work_directory=data_path)
@@ -125,10 +66,14 @@ hparams = prepare_hparams(yaml_file,
                           batch_size=batch_size)
 
 hparams.save_model = True
-hparams.show_step = 20000
+hparams.show_step = 5000
 hparams.MODEL_DIR = 'para'
-hparams.save_epoch = 1
-hparams.write_tfevents = False
 
 model = DKN(hparams, DKNTextIterator)
-model.fit(train_file, valid_file, 2853385)
+model.load_model('./para/epoch_5')
+
+# model.run_test(valid_file, 14085557, save_model=True, validate=True)
+model.run_test(test_file, 10388965, save_model=False, validate=True)
+
+
+    
