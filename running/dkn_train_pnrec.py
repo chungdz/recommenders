@@ -28,7 +28,7 @@ def get_test_input(session, test_file_path):
         session (list): List of user session with user_id, clicks, positive and negative interactions.
         valid_file_path (str): Path to file.
     """
-    fp_valid = open(valid_file_path, "w", encoding="utf-8")
+    fp_valid = open(test_file_path, "w", encoding="utf-8")
     for sess_id in range(len(session)):
         userid, _, poss, negs = session[sess_id]
         for i in range(len(poss)):
@@ -40,10 +40,10 @@ def get_test_input(session, test_file_path):
                 "0 " + "test_" + userid + " " + negs[i] + "%" + str(sess_id) + "\n"
             )
     fp_valid.close()
-    if os.path.isfile(valid_file_path):
-        logger.info(f"Test file {valid_file_path} successfully generated")
+    if os.path.isfile(test_file_path):
+        logger.info(f"Test file {test_file_path} successfully generated")
     else:
-        raise FileNotFoundError(f"Error when generating {valid_file_path}")
+        raise FileNotFoundError(f"Error when generating {test_file_path}")
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 print(f"System version: {sys.version}")
