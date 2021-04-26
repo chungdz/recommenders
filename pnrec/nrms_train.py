@@ -10,7 +10,10 @@ import tensorflow as tf
 
 from reco_utils.recommender.deeprec.deeprec_utils import download_deeprec_resources 
 from reco_utils.recommender.newsrec.newsrec_utils import prepare_hparams
-from reco_utils.recommender.newsrec.models.nrms import NRMSModel, LSTURModel, NAMLModel, NPAModel
+from reco_utils.recommender.newsrec.models.nrms import NRMSModel
+from reco_utils.recommender.newsrec.models.lstur import LSTURModel
+from reco_utils.recommender.newsrec.models.naml import NAMLModel
+from reco_utils.recommender.newsrec.models.npa import NPAModel
 from reco_utils.recommender.newsrec.io.mind_iterator import MINDIterator
 from reco_utils.recommender.newsrec.newsrec_utils import get_mind_data_set
 from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
