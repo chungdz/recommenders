@@ -3,13 +3,14 @@ sys.path.append("../")
 import os
 import numpy as np
 import zipfile
+import argparse
 from tqdm import tqdm
 from tempfile import TemporaryDirectory
 import tensorflow as tf
 
 from reco_utils.recommender.deeprec.deeprec_utils import download_deeprec_resources 
 from reco_utils.recommender.newsrec.newsrec_utils import prepare_hparams
-from reco_utils.recommender.newsrec.models.nrms import NRMSModel
+from reco_utils.recommender.newsrec.models.nrms import NRMSModel, LSTURModel, NAMLModel, NPAModel
 from reco_utils.recommender.newsrec.io.mind_iterator import MINDIterator
 from reco_utils.recommender.newsrec.newsrec_utils import get_mind_data_set
 from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
@@ -17,9 +18,14 @@ from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
 print("System version: {}".format(sys.version))
 print("Tensorflow version: {}".format(tf.__version__))
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--root", default="data", type=str)
+parser.add_argument("--model_name", default="nrms", type=str)
+opt = parser.parse_args()
+
 model_path = 'para'
-data_path = 'data'
-epochs = 15
+data_path = opt.root
+epochs = 10
 seed = 42
 batch_size = 128
 
@@ -39,7 +45,7 @@ valid_behaviors_file = os.path.join(data_path, 'valid', r'final_behaviors.tsv')
 wordEmb_file = os.path.join(data_path, "utils", "embedding.npy")
 userDict_file = os.path.join(data_path, "utils", "uid2index.pkl")
 wordDict_file = os.path.join(data_path, "utils", "word_dict.pkl")
-yaml_file = os.path.join(data_path, "utils", r'nrms.yaml')
+yaml_file = os.path.join(data_path, "utils", '{}.yaml'.format(opt.model_name))
 
 hparams = prepare_hparams(yaml_file, 
                           wordEmb_file=wordEmb_file,
@@ -51,7 +57,14 @@ hparams = prepare_hparams(yaml_file,
 print(hparams)
 
 iterator = MINDIterator
-model = NRMSModel(hparams, iterator, seed=seed)
+if opt.model_name == 'nrms':
+    model = NRMSModel(hparams, iterator, seed=seed)
+elif opt.model_name == 'npa':
+    model = NPAModel(hparams, iterator, seed=seed)
+elif opt.model_name == 'lstur':
+    model = LSTURModel(hparams, iterator, seed=seed)
+elif opt.model_name == 'naml':
+    model = NAMLModel(hparams, iterator, seed=seed)
 
 # print(model.run_slow_eval(news_file, valid_behaviors_file))
 
