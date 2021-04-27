@@ -14,7 +14,7 @@ from reco_utils.recommender.newsrec.models.nrms import NRMSModel
 from reco_utils.recommender.newsrec.models.lstur import LSTURModel
 from reco_utils.recommender.newsrec.models.naml import NAMLModel
 from reco_utils.recommender.newsrec.models.npa import NPAModel
-from reco_utils.recommender.newsrec.io.mind_iterator import MINDIterator
+from reco_utils.recommender.newsrec.io.mind_all_iterator import MINDAllIterator
 from reco_utils.recommender.newsrec.newsrec_utils import get_mind_data_set
 from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
 
@@ -56,22 +56,14 @@ hparams = prepare_hparams(yaml_file,
                           wordEmb_file=wordEmb_file,
                           wordDict_file=wordDict_file, 
                           userDict_file=userDict_file,
+                          vertDict_file=vertDict_file, 
                           subvertDict_file=subvertDict_file,
-                          vertDict_file=vertDict_file,
                           batch_size=batch_size,
-                          epochs=epochs,
-                          show_step=10)
+                          epochs=epochs)
 print(hparams)
 
-iterator = MINDIterator
-if opt.model_name == 'nrms':
-    model = NRMSModel(hparams, iterator, seed=seed)
-elif opt.model_name == 'npa': # model can not save
-    model = NPAModel(hparams, iterator, seed=seed)
-elif opt.model_name == 'lstur':
-    model = LSTURModel(hparams, iterator, seed=seed)
-elif opt.model_name == 'naml':
-    model = NAMLModel(hparams, iterator, seed=seed)
+iterator = iterator = MINDAllIterator
+model = NAMLModel(hparams, iterator, seed=seed)
 
 # print(model.run_slow_eval(news_file, valid_behaviors_file))
 
