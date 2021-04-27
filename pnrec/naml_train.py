@@ -23,7 +23,7 @@ print("Tensorflow version: {}".format(tf.__version__))
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--root", default="data", type=str)
-parser.add_argument("--model_name", default="nrms", type=str)
+parser.add_argument("--model_name", default="naml", type=str)
 opt = parser.parse_args()
 
 model_path = 'para'
@@ -47,7 +47,7 @@ valid_behaviors_file = os.path.join(data_path, 'valid', r'final_behaviors.tsv')
 # test_behaviors_file = os.path.join(data_path, 'test', r'behaviors.tsv')
 wordEmb_file = os.path.join(data_path, "utils", "embedding.npy")
 userDict_file = os.path.join(data_path, "utils", "uid2index.pkl")
-wordDict_file = os.path.join(data_path, "utils", "word_dict.pkl")
+wordDict_file = os.path.join(data_path, "utils", "word_dict_all.pkl")
 subvertDict_file = os.path.join(data_path, "utils", "subvert_dict.pkl")
 vertDict_file = os.path.join(data_path, "utils", "vert_dict.pkl")
 yaml_file = os.path.join(data_path, "utils", '{}.yaml'.format(opt.model_name))
@@ -70,7 +70,7 @@ elif opt.model_name == 'npa': # model can not save
     model = NPAModel(hparams, iterator, seed=seed)
 elif opt.model_name == 'lstur':
     model = LSTURModel(hparams, iterator, seed=seed)
-elif opt.model_name == 'naml': # problematic
+elif opt.model_name == 'naml':
     model = NAMLModel(hparams, iterator, seed=seed)
 
 # print(model.run_slow_eval(news_file, valid_behaviors_file))
