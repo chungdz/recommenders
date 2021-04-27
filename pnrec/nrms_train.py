@@ -49,6 +49,7 @@ wordEmb_file = os.path.join(data_path, "utils", "embedding.npy")
 userDict_file = os.path.join(data_path, "utils", "uid2index.pkl")
 wordDict_file = os.path.join(data_path, "utils", "word_dict.pkl")
 subvertDict_file = os.path.join(data_path, "utils", "subvert_dict.pkl")
+vertDict_file = os.path.join(data_path, "utils", "vert_dict.pkl")
 yaml_file = os.path.join(data_path, "utils", '{}.yaml'.format(opt.model_name))
 
 hparams = prepare_hparams(yaml_file, 
@@ -56,6 +57,7 @@ hparams = prepare_hparams(yaml_file,
                           wordDict_file=wordDict_file, 
                           userDict_file=userDict_file,
                           subvertDict_file=subvertDict_file,
+                          vertDict_file=vertDict_file,
                           batch_size=batch_size,
                           epochs=epochs,
                           show_step=10)
