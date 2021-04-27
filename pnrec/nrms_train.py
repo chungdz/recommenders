@@ -48,12 +48,14 @@ valid_behaviors_file = os.path.join(data_path, 'valid', r'final_behaviors.tsv')
 wordEmb_file = os.path.join(data_path, "utils", "embedding.npy")
 userDict_file = os.path.join(data_path, "utils", "uid2index.pkl")
 wordDict_file = os.path.join(data_path, "utils", "word_dict.pkl")
+subvertDict_file = os.path.join(data_path, "utils", "subvert_dict.pkl")
 yaml_file = os.path.join(data_path, "utils", '{}.yaml'.format(opt.model_name))
 
 hparams = prepare_hparams(yaml_file, 
                           wordEmb_file=wordEmb_file,
                           wordDict_file=wordDict_file, 
                           userDict_file=userDict_file,
+                          subvertDict_file=subvertDict_file,
                           batch_size=batch_size,
                           epochs=epochs,
                           show_step=10)
@@ -62,7 +64,7 @@ print(hparams)
 iterator = MINDIterator
 if opt.model_name == 'nrms':
     model = NRMSModel(hparams, iterator, seed=seed)
-elif opt.model_name == 'npa':
+elif opt.model_name == 'npa': # model can not save
     model = NPAModel(hparams, iterator, seed=seed)
 elif opt.model_name == 'lstur':
     model = LSTURModel(hparams, iterator, seed=seed)
