@@ -97,6 +97,6 @@ print('all user', len(user_dict))
 
 
 build_word_embeddings(word_dict, 'data/glove.840B.300d.txt', 'data/utils/embedding.npy')
-pickle.dump(user_dict, open('data/utils/uid2index.pkl', 'rw'))
-pickle.dump(word_dict, open('data/utils/word_dict.pkl', 'rw'))
+pickle.dump(user_dict, open('data/utils/uid2index.pkl', 'wb'))
+pickle.dump(word_dict, open('data/utils/word_dict.pkl', 'wb'))
 
