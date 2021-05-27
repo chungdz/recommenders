@@ -229,7 +229,7 @@ class BaseModel:
             train_end = time.time()
             train_time = train_end - train_start
             
-            self.model.save_weights('./para/dkn_' + str(epoch) + '.h5')
+            # self.model.save_weights('./para/dkn_' + str(epoch) + '.h5')
 
             eval_start = time.time()
 
