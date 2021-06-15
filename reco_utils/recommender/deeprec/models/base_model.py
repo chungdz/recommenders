@@ -410,7 +410,7 @@ class BaseModel:
         except:
             raise IOError("Failed to find any matching files for {0}".format(act_path))
 
-    def fit(self, train_file, valid_file, lenth, test_file=None):
+    def fit(self, train_file, valid_file, lenth, vlen, test_file=None):
         """Fit the model with train_file. Evaluate the model on valid_file per epoch to observe the training status.
         If test_file is not None, evaluate it too.
 
@@ -465,7 +465,7 @@ class BaseModel:
                     )
 
             eval_start = time.time()
-            eval_res = self.run_eval(valid_file)
+            eval_res = self.run_eval(valid_file, vlen)
             train_info = ",".join(
                 [
                     str(item[0]) + ":" + str(item[1])
@@ -541,7 +541,7 @@ class BaseModel:
             all_preds.append(group_preds[k])
         return all_labels, all_preds
 
-    def run_eval(self, filename):
+    def run_eval(self, filename, vlen):
         """Evaluate the given file and returns some evaluation metrics.
 
         Args:
@@ -554,9 +554,9 @@ class BaseModel:
         preds = []
         labels = []
         imp_indexs = []
-        for batch_data_input, imp_index, data_size in self.iterator.load_data_from_file(
+        for batch_data_input, imp_index, data_size in tqdm(self.iterator.load_data_from_file(
             filename
-        ):
+        ), total=math.ceil(vlen / self.hparams.batch_size)):
             step_pred, step_labels = self.eval(load_sess, batch_data_input)
             preds.extend(np.reshape(step_pred, -1))
             labels.extend(np.reshape(step_labels, -1))
