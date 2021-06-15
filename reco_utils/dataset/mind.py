@@ -416,9 +416,9 @@ def generate_embeddings(
         word_embeddings[word_dict[word]] = word_embedding_dict[word]
 
     logger.info("Generating entity embeddings...")
-    entity_embeddings = np.zeros([entity_index, word_embedding_dim])
-    for entity in entity2index:
-        entity_embeddings[entity2index[entity]] = entity_embedding_dict[entity]
+    entity_embeddings = np.random.rand(entity_index, word_embedding_dim)
+    # for entity in entity2index:
+    #     entity_embeddings[entity2index[entity]] = entity_embedding_dict[entity]
 
     news_feature_path = os.path.join(data_path, "doc_feature.txt")
     logger.info(f"Saving word and entity features in {news_feature_path}")
