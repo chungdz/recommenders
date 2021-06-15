@@ -163,6 +163,7 @@ def get_train_input(session, train_file_path, npratio=4):
         train_file_path (str): Path to file.
         npration (int): Ratio for negative sampling.
     """
+    train_len = 0
     fp_train = open(train_file_path, "w", encoding="utf-8")
     for sess_id in range(len(session)):
         sess = session[sess_id]
@@ -173,11 +174,13 @@ def get_train_input(session, train_file_path, npratio=4):
             fp_train.write("1 " + "train_" + userid + " " + pos + "\n")
             for neg_ins in neg:
                 fp_train.write("0 " + "train_" + userid + " " + neg_ins + "\n")
+            train_len += 1 + npratio
     fp_train.close()
     if os.path.isfile(train_file_path):
         logger.info(f"Train file {train_file_path} successfully generated")
     else:
         raise FileNotFoundError(f"Error when generating {train_file_path}")
+    return train_len
 
 
 def get_valid_input(session, valid_file_path):
@@ -187,6 +190,7 @@ def get_valid_input(session, valid_file_path):
         session (list): List of user session with user_id, clicks, positive and negative interactions.
         valid_file_path (str): Path to file.
     """
+    valid_len = 0
     fp_valid = open(valid_file_path, "w", encoding="utf-8")
     for sess_id in range(len(session)):
         userid, _, poss, negs = session[sess_id]
@@ -194,15 +198,18 @@ def get_valid_input(session, valid_file_path):
             fp_valid.write(
                 "1 " + "valid_" + userid + " " + poss[i] + "%" + str(sess_id) + "\n"
             )
+            valid_len += 1
         for i in range(len(negs)):
             fp_valid.write(
                 "0 " + "valid_" + userid + " " + negs[i] + "%" + str(sess_id) + "\n"
             )
+            valid_len += 1
     fp_valid.close()
     if os.path.isfile(valid_file_path):
         logger.info(f"Validation file {valid_file_path} successfully generated")
     else:
         raise FileNotFoundError(f"Error when generating {valid_file_path}")
+    return valid_len
 
 def get_test_input(session, test_file_path):
     """Generate test file.
