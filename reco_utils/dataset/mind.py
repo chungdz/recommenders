@@ -265,12 +265,12 @@ def _read_news(filepath, news_words, news_entities, tokenizer):
         news_entities[splitted[0]] = []
         for entity in json.loads(splitted[6]):
             news_entities[splitted[0]].append(
-                (entity["SurfaceForms"], entity["WikidataId"])
+                (entity["WikidataId"], entity["WikidataId"])
             )
     return news_words, news_entities
 
 
-def get_words_and_entities(train_news, valid_news, test_news=None):
+def get_words_and_entities(train_news, valid_news=None, test_news=None):
     """Load words and entities
 
     Args:
@@ -286,9 +286,10 @@ def get_words_and_entities(train_news, valid_news, test_news=None):
     news_words, news_entities = _read_news(
         train_news, news_words, news_entities, tokenizer
     )
-    news_words, news_entities = _read_news(
-        valid_news, news_words, news_entities, tokenizer
-    )
+    if valid_news is not None:
+        news_words, news_entities = _read_news(
+            valid_news, news_words, news_entities, tokenizer
+        )
     if test_news is not None:
         news_words, news_entities = _read_news(
         test_news, news_words, news_entities, tokenizer
