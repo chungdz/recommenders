@@ -376,15 +376,6 @@ def generate_embeddings(
         )
     fp_entity_vec_valid.close()
 
-    logger.info("Reading test entities...")
-    fp_entity_vec_test = open(test_entities, "r", encoding="utf-8")
-    for line in fp_entity_vec_test:
-        linesplit = line.split()
-        entity_embedding_dict[linesplit[0]] = np.asarray(
-            list(map(float, linesplit[1:]))
-        )
-    fp_entity_vec_test.close()
-
     logger.info("Generating word and entity indexes...")
     word_dict = {}
     word_index = 1
