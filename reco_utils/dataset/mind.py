@@ -411,9 +411,9 @@ def generate_embeddings(
                 break
 
     logger.info("Generating word embeddings...")
-    word_embeddings = np.zeros([word_index, word_embedding_dim])
-    for word in word_dict:
-        word_embeddings[word_dict[word]] = word_embedding_dict[word]
+    word_embeddings = np.random.rand(word_index, word_embedding_dim)
+    # for word in word_dict:
+    #     word_embeddings[word_dict[word]] = word_embedding_dict[word]
 
     logger.info("Generating entity embeddings...")
     entity_embeddings = np.random.rand(entity_index, word_embedding_dim)
