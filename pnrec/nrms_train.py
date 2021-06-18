@@ -38,11 +38,11 @@ MIND_type = 'large'
 # tmpdir = TemporaryDirectory()
 # data_path = tmpdir.name
 
-# train_news_file = os.path.join(data_path, 'train', r'news.tsv')
-news_file = os.path.join(data_path, 'all_news.tsv')
-train_behaviors_file = os.path.join(data_path, 'train', r'final_behaviors.tsv')
-# valid_news_file = os.path.join(data_path, 'valid', r'news.tsv')
-valid_behaviors_file = os.path.join(data_path, 'valid', r'final_behaviors.tsv')
+train_news_file = os.path.join(data_path, 'train', r'news.tsv')
+# news_file = os.path.join(data_path, 'all_news.tsv')
+train_behaviors_file = os.path.join(data_path, 'train', r'behaviors.tsv')
+valid_news_file = os.path.join(data_path, 'valid', r'news.tsv')
+valid_behaviors_file = os.path.join(data_path, 'valid', r'behaviors.tsv')
 # test_news_file = os.path.join(data_path, 'test', r'news.tsv')
 # test_behaviors_file = os.path.join(data_path, 'test', r'behaviors.tsv')
 wordEmb_file = os.path.join(data_path, "utils", "embedding.npy")
@@ -73,7 +73,7 @@ elif opt.model_name == 'naml': # problematic
 
 # print(model.run_slow_eval(news_file, valid_behaviors_file))
 
-model.fit(news_file, train_behaviors_file, news_file, valid_behaviors_file)
+model.fit(train_news_file, train_behaviors_file, valid_news_file, valid_behaviors_file)
 
 # model_path = os.path.join(model_path, "model")
 # os.makedirs(model_path, exist_ok=True)
