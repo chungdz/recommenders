@@ -68,7 +68,7 @@ target_day.drop(columns=['date']).to_csv('./data/train/target_behaviors.tsv', se
 print('target ', target_day.shape)
 
 f_train_news = os.path.join(data_path, "train/news.tsv")
-f_dev_news = os.path.join(data_path, "dev/news.tsv")
+f_dev_news = os.path.join(data_path, "valid/news.tsv")
 
 print("Loading training news")
 train_news = pd.read_csv(f_train_news, sep="\t", encoding="utf-8",
