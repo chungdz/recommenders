@@ -74,7 +74,12 @@ class BaseModel:
         self.loss = self._get_loss()
         self.train_optimizer = self._get_opt()
 
-        self.model.compile(loss=self.loss, optimizer=self.train_optimizer)
+        self.model.compile(loss=self.TCE_loss, optimizer=self.train_optimizer)
+    
+    @staticmethod
+    def TCE_loss(y_true, y_pred):
+        loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
+        return loss
 
     def _init_embedding(self, file_path):
         """Load pre-trained embeddings as a constant tensor.
