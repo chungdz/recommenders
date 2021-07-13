@@ -53,7 +53,7 @@ if not os.path.exists(test_news_file):
     download_deeprec_resources(mind_url, \
                                os.path.join(data_path, 'test'), mind_test_dataset)
 if not os.path.exists(yaml_file):
-    download_deeprec_resources(r'https://recodatasets.blob.core.windows.net/newsrec/', \
+    download_deeprec_resources(r'https://recodatasets.z20.web.core.windows.net/newsrec/', \
                                os.path.join(data_path, 'utils'), mind_utils)
 
 
