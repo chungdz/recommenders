@@ -8,6 +8,7 @@ import numpy as np
 from tqdm import tqdm
 import tensorflow as tf
 from tensorflow import keras
+import math
 
 from reco_utils.recommender.deeprec.deeprec_utils import cal_metric
 
@@ -75,11 +76,29 @@ class BaseModel:
         self.train_optimizer = self._get_opt()
 
         self.model.compile(loss=self.TCE_loss, optimizer=self.train_optimizer)
-    
-    @staticmethod
-    def TCE_loss(y_true, y_pred):
-        loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
-        return loss
+
+        # self.alpha = 1 / 3000
+        # self.epsilon_max = 0.05
+        # self.loss_step = 0
+
+    def TCE_loss(self, y_true, y_pred):
+        origin_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
+        sort_loss = tf.sort(origin_loss, direction='DESCENDING')
+
+        try:
+            self.loss_step += 1
+        except:
+            self.loss_step = 1
+
+        alpha = 1 / 10000
+        epsilon_max = 0.05
+        batch_size = 64
+
+        drop_rate = alpha * self.loss_step * epsilon_max
+        drop_num = math.floor(drop_rate * batch_size)
+
+        final_loss = sort_loss[drop_num:]
+        return tf.math.reduce_mean(final_loss)
 
     def _init_embedding(self, file_path):
         """Load pre-trained embeddings as a constant tensor.
