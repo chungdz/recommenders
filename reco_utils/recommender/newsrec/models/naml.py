@@ -40,7 +40,7 @@ class NAMLModel(BaseModel):
         self.loss_step = 1
         self.alpha = 1 / 10000
         self.epsilon_max = 0.05
-        self.batch_size = 64
+        self.batch_size = 128
 
         super().__init__(hparams, iterator_creator, seed=seed)
 
