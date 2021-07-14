@@ -224,7 +224,7 @@ class BaseModel:
 
                 step_result = self.train(batch_data_input)
                 step_data_loss = step_result
-
+                self.loss_step += 1
                 epoch_loss += step_data_loss
                 step += 1
                 if step % self.hparams.show_step == 0:

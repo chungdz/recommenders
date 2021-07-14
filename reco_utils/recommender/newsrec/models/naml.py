@@ -395,10 +395,6 @@ class NAMLModel(BaseModel):
         origin_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
         sort_loss = tf.sort(origin_loss, direction='DESCENDING')
 
-        
-        self.loss_step += 1
-        
-
         drop_rate = self.alpha * self.loss_step * self.epsilon_max
         drop_num = math.floor(drop_rate * self.batch_size)
 
