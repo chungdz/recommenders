@@ -236,7 +236,7 @@ class BaseModel:
 
             train_end = time.time()
             train_time = train_end - train_start
-            print(self.loss_step)
+            print('epoch ', epoch, ' loss step ', self.loss_step)
 
             eval_start = time.time()
 
