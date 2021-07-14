@@ -80,25 +80,9 @@ class BaseModel:
         # self.alpha = 1 / 3000
         # self.epsilon_max = 0.05
         # self.loss_step = 0
-
+    @abc.abstractclassmethod
     def TCE_loss(self, y_true, y_pred):
-        origin_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
-        sort_loss = tf.sort(origin_loss, direction='DESCENDING')
-
-        try:
-            self.loss_step += 1
-        except:
-            self.loss_step = 1
-
-        alpha = 1 / 10000
-        epsilon_max = 0.05
-        batch_size = 64
-
-        drop_rate = alpha * self.loss_step * epsilon_max
-        drop_num = math.floor(drop_rate * batch_size)
-
-        final_loss = sort_loss[drop_num:]
-        return tf.math.reduce_mean(final_loss)
+        pass
 
     def _init_embedding(self, file_path):
         """Load pre-trained embeddings as a constant tensor.
@@ -252,6 +236,7 @@ class BaseModel:
 
             train_end = time.time()
             train_time = train_end - train_start
+            print(self.loss_step)
 
             eval_start = time.time()
 

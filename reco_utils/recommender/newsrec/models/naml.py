@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras as keras
 from tensorflow.keras import layers
-
+import math
 
 from reco_utils.recommender.newsrec.models.base_model import BaseModel
 from reco_utils.recommender.newsrec.models.layers import AttLayer2
@@ -37,6 +37,10 @@ class NAMLModel(BaseModel):
 
         self.word2vec_embedding = self._init_embedding(hparams.wordEmb_file)
         self.hparam = hparams
+        self.loss_step = 1
+        self.alpha = 1 / 10000
+        self.epsilon_max = 0.05
+        self.batch_size = 64
 
         super().__init__(hparams, iterator_creator, seed=seed)
 
@@ -385,3 +389,18 @@ class NAMLModel(BaseModel):
         )
 
         return model, scorer
+    
+    def TCE_loss(self, y_true, y_pred):
+
+        origin_loss = tf.keras.losses.categorical_crossentropy(y_true, y_pred)
+        sort_loss = tf.sort(origin_loss, direction='DESCENDING')
+
+        
+        self.loss_step += 1
+        
+
+        drop_rate = self.alpha * self.loss_step * self.epsilon_max
+        drop_num = math.floor(drop_rate * self.batch_size)
+
+        final_loss = sort_loss[drop_num:]
+        return tf.math.reduce_mean(final_loss)
